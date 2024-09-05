@@ -1,0 +1,22 @@
+A Packet's Journey Through the OpenBSD Network Stack
+
+When debugging network issues, it is important to understand when
+certain things happen.  Tcpdump provides valuable insight, pf
+transforms packets, pseudo devices add features, and netstat counters
+show action.  The call graph of the functions within the kernel is
+the base to comprehend the relation between these sources of
+information.
+
+The layering of kernel code in hardware drivers, pseudo devices,
+IP processing, forwarding and protocol layer is explained.  The
+kernel provides the socket interface to userland processes.  Packet
+forwarding happens within the kernel.  Bridge code uses certain
+shortcuts.  pf is a swiss knife that can manipulate traffic in
+multiple layers.  IPsec has an independent interface that overrides
+routing.  Routing itself and neighbor discovery is a necessary step
+that has its tentacles everywhere.  Checksum calculation can be
+performed by hardware offloading.
+
+By using examples with a single packets, their way through the
+kernel is shown.  The possible branches, configuration options, and
+measurement output are put in correlation.
