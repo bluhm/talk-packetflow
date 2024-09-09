@@ -15,6 +15,7 @@
 \documentclass[14pt]{beamer}
 \usetheme{Frankfurt}
 \usepackage{tikz}
+\usepackage{framed}
 \usepackage{graphicx}
 \usepackage{varwidth}
 \usepackage{tipa}
@@ -79,10 +80,10 @@ ip:
     101 packets not forwardable
 tcp:
     1542163 packets sent
-	616615 data packets (165690394 bytes)
-	333 data packets (296898 bytes) retransmitted
-	740242 ack-only packets (646590 delayed)
-	153288 window update packets
+        616615 data packets (165690394 bytes)
+        333 data packets (296898 bytes) retransmitted
+        740242 ack-only packets (646590 delayed)
+        153288 window update packets
 \end{verbatim}
 \end{frame}
 
@@ -157,6 +158,51 @@ tcpdump -ni enc0 -v
   \draw[thick] (-4,1) node(hardware) {} -- +(10.5,0);
   \node [below right] at (hardware) {Hardware};
 \end{tikzpicture}
+\end{frame}
+
+\subsection{Input Queues}
+\begin{frame}{Input Queues}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (ni) [right] {network interface} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (rx) [right] {receive DMA buffer} ++(-.5,.8)
+    node (dd) [right] {device driver} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {interface input queue} ++(-.5,.8)
+    node (is) [right] {IP stack} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (rb) [right] {socket receive buffer} ++(-.5,.8)
+    node (so) [right] {socket} ++(0,1.2)
+    ;
+  \path (node cs:name=ni,anchor=west) +(.3+2*.4,.3) coordinate (nio) {};
+  \path (node cs:name=rx,anchor=west) +(-.2-3*.4,0) coordinate (rxi) {};
+  \draw[->] (nio) -- (rxi);
+  \path (node cs:name=rx,anchor=west) +(-.2,0) coordinate (rxo) {};
+  \path (node cs:name=dd,anchor=west) +(.3,-.3) coordinate (ddi) {};
+  \draw[->] (rxo) -- (ddi);
+  \path (node cs:name=dd,anchor=west) +(.3+2*.4,.3) coordinate (ddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-3*.4,0) coordinate (iqi) {};
+  \draw[->] (ddo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=is,anchor=west) +(.3,-.3) coordinate (isi) {};
+  \draw[->] (iqo) -- (isi);
+
+  \path (node cs:name=is,anchor=west) +(.3+2*.4,.3) coordinate (iso) {};
+  \path (node cs:name=rb,anchor=west) +(-.2-3*.4,0) coordinate (rbi) {};
+  \draw[->] (iso) -- (rbi);
+  \path (node cs:name=rb,anchor=west) +(-.2,0) coordinate (rbo) {};
+  \path (node cs:name=so,anchor=west) +(.3,-.3) coordinate (soi) {};
+  \draw[->] (rbo) -- (soi);
+\end{tikzpicture}
+\end{framed}
 \end{frame}
 
 \subsection{Packet Input}
