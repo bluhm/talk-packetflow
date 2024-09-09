@@ -1,0 +1,20 @@
+name: LaTeX CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install packages
+      run: sudo apt-get -y install texlive-latex-recommended texlive-latex-extra tikzit
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Make build
+      run: make
