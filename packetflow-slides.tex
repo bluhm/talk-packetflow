@@ -62,7 +62,7 @@
     {Internet};
   \node [ellipse, draw, aspect=2]
     at (0, 1.8)
-    {Stack};
+    {Application};
 \end{tikzpicture}
 \end{frame}
 
@@ -251,8 +251,7 @@ tcpdump -ni enc0 -v
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (irb) [right] {receive buffer} ++(-.5,.8)
-    node (iso) [right] {socket};
-  \draw (node cs:name=iso,anchor=west) ++(4.5,0)
+    node (iso) [right] {socket} ++(4.5,0)
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
@@ -271,66 +270,74 @@ tcpdump -ni enc0 -v
   \path (node cs:name=ois,anchor=west) +(.3,.3) coordinate (oisi) {};
   \draw[->] (osbo) -- (oisi);
 \end{tikzpicture}
+\end{framed}
 netstat -n -p tcp
 \scriptsize
 \begin{verbatim}
 Active Internet connections (including servers)
 Proto  Recv-Q Send-Q  Local Address     Foreign Address   TCP-State
-tcp     65160      0  10.10.11.20.35477 10.10.11.1.41996  ESTABLISHED
-tcp         0 131732  10.10.12.3.44648  10.10.12.40.12345 ESTABLISHED
+tcp     65160      0  10.10.11.2.35477  10.10.11.1.41996  ESTABLISHED
+tcp         0 131732  10.10.12.3.44648  10.10.12.4.12345  ESTABLISHED
 \end{verbatim}
-\end{framed}
 \end{frame}
 
-\subsection{Packet Input}
-\begin{frame}{Packet Input}
+\subsection{Interface Queue}
+\begin{frame}[fragile]{Interface Queue}
+\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
-    node (ni) [right] {network driver interrupt handler} ++(0,.8)
-    node (ei) [right] {XXX ifiq\_input XXX ether\_input()} ++(.1,.6)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    node (idd) [right] {device driver} ++(.1,.6)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
-    node (rq) [right] {ip interface receive queue} ++(-.5,.8)
-    node (ii) [right] {ip\_input()} ++(0,.8)
-    node (ps) [right] {inetsw[] internet protocol switch} ++(0,.8)
-    node (ti) [right] {tcp\_input()} ++(.1,.6)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
-    node (rb) [right,red] {socket receive buffer} ++(-.5,.8)
-    node (sr) [right] {soreceive()} ++(0,1.2)
-    node (rd)  [right] {read()};
-
-  \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nio) {};
-  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (eii) {};
-  \draw[->] (nio) -- (eii);
-  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
-  \path (node cs:name=rq,anchor=west) +(-.2-5*.4,0) coordinate (rqi) {};
-  \draw[->] (eio) -- (rqi);
-  \path (node cs:name=rq,anchor=west) +(-.2,0) coordinate (rqo) {};
-  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
-  \draw[->] (rqo) -- (iii);
-  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
-  \path (node cs:name=ps,anchor=west) +(.3,-.3) coordinate (psi) {};
-  \draw[->] (iio) -- (psi);
-  \path (node cs:name=ps,anchor=west) +(.3,.3) coordinate (pso) {};
-  \path (node cs:name=ti,anchor=west) +(.3,-.3) coordinate (tii) {};
-  \draw[->] (pso) -- (tii);
-  \path (node cs:name=ti,anchor=west) +(.3+2*.4,.3) coordinate (tio) {};
-  \path (node cs:name=rb,anchor=west) +(-.2-3*.4,0) coordinate (rbi) {};
-  \draw[->] (tio) -- (rbi);
-  \path (node cs:name=rb,anchor=west) +(-.2,0) coordinate (rbo) {};
-  \path (node cs:name=sr,anchor=west) +(.3,-.3) coordinate (sri) {};
-  \draw[->] (rbo) -- (sri);
-  \path (node cs:name=sr,anchor=west) +(.3,.3) coordinate (sro) {};
-  \path (node cs:name=rd,anchor=west) +(.3,-.3) coordinate (rdi) {};
-  \draw[->] (sro) -- (rdi);
-
-  \draw[thick] (rdi -| 0,0) ++(0,-.3) node (context) {} -- +(10.5,0);
-  \node [below right] at (context) {Kernel};
-  \node [above right] at (context) {User Land};
+    node (iiq) [right] {input queue} ++(-.5,.8)
+    node (iis) [right] {IP stack} ++(4,0)
+    node (ois) [right] {IP stack} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (ooq) [right] {output queue} ++(-.5,-.8)
+    node (odd) [right] {device driver};
+  \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
+  \path (node cs:name=iiq,anchor=west) +(-.2-2*.4,0) coordinate (iiqi) {};
+  \draw[->] (iiso) -- (iiqi);
+  \path (node cs:name=iiq,anchor=west) +(-.2,0) coordinate (iiqo) {};
+  \path (node cs:name=iis,anchor=west) +(.3,-.3) coordinate (iisi) {};
+  \draw[->] (iiqo) -- (iisi);
+  \path (node cs:name=ois,anchor=west) +(.3+1*.4,-.3) coordinate (oiso) {};
+  \path (node cs:name=ooq,anchor=west) +(-.2-2*.4,0) coordinate (ooqi) {};
+  \draw[->] (oiso) -- (ooqi);
+  \path (node cs:name=ooq,anchor=west) +(-.2,0) coordinate (ooqo) {};
+  \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
+  \draw[->] (ooqo) -- (oddi);
 \end{tikzpicture}
+\end{framed}
+kstat
+\\
+\vspace{.2cm}
+\scriptsize
+\begin{tabular}{ll}
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix0:0:rxq:0
+	 packets: 158069114 packets
+	   bytes: 300328302395 bytes
+	  qdrops: 7902615 packets
+	    qlen: 0 packets
+	enqueues: 6947931
+	dequeues: 5729695
+  \end{verbatim}
+  \end{minipage}
+  &
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix0:0:txq:0
+	 packets: 11094621 packets
+	   bytes: 894601044 bytes
+	  qdrops: 0 packets
+	    qlen: 0 packets
+	 maxqlen: 255 packets
+  \end{verbatim}
+  \end{minipage}
+\end{tabular}
 \end{frame}
 
 \subsection{Data}
