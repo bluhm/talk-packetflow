@@ -168,40 +168,117 @@ tcpdump -ni enc0 -v
     node (ni) [right] {network interface} ++(.1,.6)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
-    node (rx) [right] {receive DMA buffer} ++(-.5,.8)
+    rectangle ++(.4,.4) ++(0,-.2)
+    node (rx) [right] {receive DMA ring} ++(-.5-1*.4,.8)
     node (dd) [right] {device driver} ++(.1,.6)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (iq) [right] {interface input queue} ++(-.5,.8)
     node (is) [right] {IP stack} ++(.1,.6)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
-    rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (rb) [right] {socket receive buffer} ++(-.5,.8)
-    node (so) [right] {socket} ++(0,1.2)
-    ;
-  \path (node cs:name=ni,anchor=west) +(.3+2*.4,.3) coordinate (nio) {};
+    node (so) [right] {socket};
+  \path (node cs:name=ni,anchor=west) +(.3+1*.4,.3) coordinate (nio) {};
   \path (node cs:name=rx,anchor=west) +(-.2-3*.4,0) coordinate (rxi) {};
   \draw[->] (nio) -- (rxi);
-  \path (node cs:name=rx,anchor=west) +(-.2,0) coordinate (rxo) {};
+  \path (node cs:name=rx,anchor=west) +(-.2-1*.4,0) coordinate (rxo) {};
   \path (node cs:name=dd,anchor=west) +(.3,-.3) coordinate (ddi) {};
   \draw[->] (rxo) -- (ddi);
-  \path (node cs:name=dd,anchor=west) +(.3+2*.4,.3) coordinate (ddo) {};
-  \path (node cs:name=iq,anchor=west) +(-.2-3*.4,0) coordinate (iqi) {};
+  \path (node cs:name=dd,anchor=west) +(.3+1*.4,.3) coordinate (ddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
   \draw[->] (ddo) -- (iqi);
   \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
   \path (node cs:name=is,anchor=west) +(.3,-.3) coordinate (isi) {};
   \draw[->] (iqo) -- (isi);
-
-  \path (node cs:name=is,anchor=west) +(.3+2*.4,.3) coordinate (iso) {};
-  \path (node cs:name=rb,anchor=west) +(-.2-3*.4,0) coordinate (rbi) {};
+  \path (node cs:name=is,anchor=west) +(.3+1*.4,.3) coordinate (iso) {};
+  \path (node cs:name=rb,anchor=west) +(-.2-2*.4,0) coordinate (rbi) {};
   \draw[->] (iso) -- (rbi);
   \path (node cs:name=rb,anchor=west) +(-.2,0) coordinate (rbo) {};
   \path (node cs:name=so,anchor=west) +(.3,-.3) coordinate (soi) {};
   \draw[->] (rbo) -- (soi);
 \end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\subsection{Output Queues}
+\begin{frame}{Output Queues}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (so) [right] {socket} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (sb) [right] {socket send buffer} ++(-.5,-.8)
+    node (is) [right] {IP stack} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {interface output queue} ++(-.5,-.8)
+    node (dd) [right] {device driver} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) ++(0,.2)
+    node (tx) [right] {transmit DMA ring} ++(-.5-1*.4,-.8)
+    node (ni) [right] {network interface};
+  \path (node cs:name=so,anchor=west) +(.3+1*.4,-.3) coordinate (soo) {};
+  \path (node cs:name=sb,anchor=west) +(-.2-2*.4,0) coordinate (sbi) {};
+  \draw[->] (soo) -- (sbi);
+  \path (node cs:name=sb,anchor=west) +(-.2,0) coordinate (sbo) {};
+  \path (node cs:name=is,anchor=west) +(.3,.3) coordinate (isi) {};
+  \draw[->] (sbo) -- (isi);
+  \path (node cs:name=is,anchor=west) +(.3+1*.4,-.3) coordinate (iso) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (iso) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=dd,anchor=west) +(.3,.3) coordinate (ddi) {};
+  \draw[->] (oqo) -- (ddi);
+  \path (node cs:name=dd,anchor=west) +(.3+1*.4,-.3) coordinate (ddo) {};
+  \path (node cs:name=tx,anchor=west) +(-.2-3*.4,0) coordinate (txi) {};
+  \draw[->] (ddo) -- (txi);
+  \path (node cs:name=tx,anchor=west) +(-.2-1*.4,0) coordinate (txo) {};
+  \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nii) {};
+  \draw[->] (txo) -- (nii);
+\end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\subsection{Socket Buffer}
+\begin{frame}[fragile]{Socket Buffer}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (iis) [right] {IP stack} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (irb) [right] {receive buffer} ++(-.5,.8)
+    node (iso) [right] {socket};
+  \draw (node cs:name=iso,anchor=west) ++(4.5,0)
+    node (oso) [right] {socket} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (osb) [right] {send buffer} ++(-.5,-.8)
+    node (ois) [right] {IP stack} ++(.1,-.6);
+  \path (node cs:name=iis,anchor=west) +(.3+1*.4,.3) coordinate (iiso) {};
+  \path (node cs:name=irb,anchor=west) +(-.2-2*.4,0) coordinate (irbi) {};
+  \draw[->] (iiso) -- (irbi);
+  \path (node cs:name=irb,anchor=west) +(-.2,0) coordinate (irbo) {};
+  \path (node cs:name=iso,anchor=west) +(.3,-.3) coordinate (isoi) {};
+  \draw[->] (irbo) -- (isoi);
+  \path (node cs:name=oso,anchor=west) +(.3+1*.4,-.3) coordinate (osoo) {};
+  \path (node cs:name=osb,anchor=west) +(-.2-2*.4,0) coordinate (osbi) {};
+  \draw[->] (osoo) -- (osbi);
+  \path (node cs:name=osb,anchor=west) +(-.2,0) coordinate (osbo) {};
+  \path (node cs:name=ois,anchor=west) +(.3,.3) coordinate (oisi) {};
+  \draw[->] (osbo) -- (oisi);
+\end{tikzpicture}
+netstat -n -p tcp
+\scriptsize
+\begin{verbatim}
+Active Internet connections (including servers)
+Proto  Recv-Q Send-Q  Local Address     Foreign Address   TCP-State
+tcp     65160      0  10.10.11.20.35477 10.10.11.1.41996  ESTABLISHED
+tcp         0 131732  10.10.12.3.44648  10.10.12.40.12345 ESTABLISHED
+\end{verbatim}
 \end{framed}
 \end{frame}
 
