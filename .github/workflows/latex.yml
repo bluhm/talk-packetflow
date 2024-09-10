@@ -18,3 +18,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Make build
       run: make
+    - name: Upload PDF
+      uses: actions/upload-artifact@v4
+      with:
+        name: packetflow-slides
+        path: packetflow-slides.pdf
