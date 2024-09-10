@@ -509,6 +509,38 @@ ix1:0:txq:3
 
 \section{Tips \& Tricks}
 
+\subsection{Netstat Diff}
+\begin{frame}[fragile]{Netstat Diff}
+\begin{itemize}
+  \item netstat -ss >before
+  \item do some networking
+  \item netstat -ss >after
+  \item diff -up before after
+\end{itemize}
+\scriptsize
+\begin{verbatim}
+ tcp:
+-       1024475 packets sent
+-               829253 data packets (10075190801 bytes)
++       1024496 packets sent
++               829269 data packets (10075194870 bytes)
+                8767 data packets (35352640 bytes) retransmitted
+-               162711 ack-only packets (163607 delayed)
++               162715 ack-only packets (163619 delayed)
+                21271 window update packets
+\end{verbatim}
+\end{frame}
+
+\subsection{Counters}
+\begin{frame}{Counters}
+Developers should
+\begin{itemize}
+  \item check for error
+  \item count errors
+  \item use unique counter
+\end{itemize}
+\end{frame}
+
 \section{Final}
 
 \subsection{Links}
