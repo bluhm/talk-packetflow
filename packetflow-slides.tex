@@ -252,6 +252,7 @@ tcpdump -ni enc0 -v
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (irb) [right] {receive buffer} ++(-.5,.8)
     node (iso) [right] {socket} ++(4.5,0)
+
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
@@ -289,25 +290,25 @@ tcp         0 131732  10.10.12.3.44648  10.10.12.4.12345  ESTABLISHED
     node (idd) [right] {device driver} ++(.1,.6)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
-    node (iiq) [right] {input queue} ++(-.5,.8)
+    node (iq) [right] {input queue} ++(-.5,.8)
     node (iis) [right] {IP stack} ++(4,0)
     node (ois) [right] {IP stack} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
-    node (ooq) [right] {output queue} ++(-.5,-.8)
+    node (oq) [right] {output queue} ++(-.5,-.8)
     node (odd) [right] {device driver};
   \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
-  \path (node cs:name=iiq,anchor=west) +(-.2-2*.4,0) coordinate (iiqi) {};
-  \draw[->] (iiso) -- (iiqi);
-  \path (node cs:name=iiq,anchor=west) +(-.2,0) coordinate (iiqo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (iiso) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
   \path (node cs:name=iis,anchor=west) +(.3,-.3) coordinate (iisi) {};
-  \draw[->] (iiqo) -- (iisi);
+  \draw[->] (iqo) -- (iisi);
   \path (node cs:name=ois,anchor=west) +(.3+1*.4,-.3) coordinate (oiso) {};
-  \path (node cs:name=ooq,anchor=west) +(-.2-2*.4,0) coordinate (ooqi) {};
-  \draw[->] (oiso) -- (ooqi);
-  \path (node cs:name=ooq,anchor=west) +(-.2,0) coordinate (ooqo) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (oiso) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
   \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
-  \draw[->] (ooqo) -- (oddi);
+  \draw[->] (oqo) -- (oddi);
 \end{tikzpicture}
 \end{framed}
 kstat
@@ -345,7 +346,7 @@ ix0:0:txq:0
 \begin{frame}[fragile]{Device Driver OACTIVE}
 \begin{framed}
 \begin{tikzpicture}
-  \draw (0,0)
+  \draw (0,0) ++(3.5,0)
     node (dd) [right] {device driver} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
@@ -430,9 +431,85 @@ ix1:0:txq:3
 \end{tabular}
 \end{frame}
 
+\section{IP Stack}
+
+\subsection{IP Forwarding}
+\begin{frame}{IP Forwarding}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (idd) [right] {device driver} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {input queue} ++(-.5,.8)
+    node (ei) [right] {ether\_input()} ++(0,.8)
+    node (ii) [right] {ip\_input()} ++(0,1.2)
+    node (ti) [right] {tcp\_input()} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (rb) [right] {receive} ++(-.5,.8)
+    node (iso) [right] {socket} ++(3,0)
+
+    node (oso) [right] {socket} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (sb) [right] {send buffer} ++(-.5,-.8)
+    node (to) [right] {tcp\_output()} ++(0,-1.2)
+    node (io) [right] {ip\_output()} ++(0,-.8)
+    node (eo) [right] {ether\_output()} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {output} ++(-.5,-.8)
+    node (odd) [right] {device} ++(.1,-.6);
+  \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (iddo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (iei) {};
+  \draw[->] (iqo) -- (iei);
+  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
+  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
+  \draw[->] (eio) -- (iii);
+  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
+  \path (node cs:name=ti,anchor=west) +(.3,-.3) coordinate (tii) {};
+  \draw[->] (iio) -- (tii);
+  \path (node cs:name=ti,anchor=west) +(.3+1*.4,.3) coordinate (iti) {};
+  \path (node cs:name=rb,anchor=west) +(-.2-2*.4,0) coordinate (rbi) {};
+  \draw[->] (iti) -- (rbi);
+  \path (node cs:name=rb,anchor=west) +(-.2,0) coordinate (rbo) {};
+  \path (node cs:name=iso,anchor=west) +(.3,-.3) coordinate (isoi) {};
+  \draw[->] (rbo) -- (isoi);
+
+  \path (node cs:name=oso,anchor=west) +(.3+1*.4,-.3) coordinate (osoo) {};
+  \path (node cs:name=sb,anchor=west) +(-.2-2*.4,0) coordinate (sbi) {};
+  \draw[->] (osoo) -- (sbi);
+  \path (node cs:name=sb,anchor=west) +(-.2,0) coordinate (sbo) {};
+  \path (node cs:name=to,anchor=west) +(.3,.3) coordinate (toi) {};
+  \draw[->] (sbo) -- (toi);
+  \path (node cs:name=to,anchor=west) +(.3,-.3) coordinate (too) {};
+  \path (node cs:name=io,anchor=west) +(.3,.3) coordinate (ioi) {};
+  \draw[->] (too) -- (ioi);
+  \path (node cs:name=io,anchor=west) +(.3,-.3) coordinate (ioo) {};
+  \path (node cs:name=eo,anchor=west) +(.3,.3) coordinate (eoi) {};
+  \draw[->] (ioo) -- (eoi);
+  \path (node cs:name=eo,anchor=west) +(.3+1*.4,-.3) coordinate (eoo) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (eoo) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
+  \draw[->] (oqo) -- (oddi);
+
+  \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
+  \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
+  \draw[->] (ifo) -- (ifi) node [midway,above] {ip\_forward()};
+\end{tikzpicture}
+\end{framed}
+\end{frame}
 
 
-\section{Conclusion}
+\section{Tips \& Tricks}
+
+\section{Final}
 
 \subsection{Links}
 \begin{frame}{Links}
