@@ -654,6 +654,32 @@ ix1:0:txq:3
 \end{framed}
 \end{frame}
 
+\subsection{Netstat Counter}
+\begin{frame}[fragile]{Netstat Counter}
+netstat -ss
+\scriptsize
+\begin{verbatim}
+ip:
+        393285673 total packets received
+        246049103 packets for this host
+        126364372 packets forwarded
+        242653961 packets sent from this host
+tcp:
+        86520236 packets sent
+        123883097 packets received
+udp:
+        400260722 datagrams received
+        82147309 dropped due to full socket buffers
+        318113273 delivered
+        396391499 datagrams output
+ip6:
+        434697159 total packets received
+        278214439 packets for this host
+        146543897 packets forwarded
+        240423068 packets sent from this host
+\end{verbatim}
+\end{frame}
+
 \subsection{pf Test}
 \begin{frame}{pf Test}
 \begin{framed}
@@ -778,8 +804,23 @@ ix1:0:txq:3
 \end{framed}
 \end{frame}
 
+\subsection{pf Rules}
+\begin{frame}[fragile]{pf Rules}
+pfctl -sr
+\scriptsize
+\begin{verbatim}
+block return all
+pass all flags S/SA
+block return in on ! lo0 proto tcp from any to any port 6000:6010
+block return out log proto tcp all user = 55
+block return out log proto udp all user = 55
+\end{verbatim}
+\end{frame}
 
-\subsection{Pseudo Devices}
+\section{Pseudo Devices}
+\begin{frame}{Agenda}
+\tableofcontents[currentsection]
+\end{frame}
 
 \subsection{bpf Tcpdump}
 
@@ -810,6 +851,33 @@ ix1:0:txq:3
 \end{verbatim}
 \end{frame}
 
+\subsection{Grep Inet Counter}
+\begin{frame}[fragile]{Grep Inet Counter}
+\scriptsize
+netstat -ss
+\begin{verbatim}
+ip:
+        81 packets not forwardable
+\end{verbatim}
+grep 'not forwardable' /usr/src/usr.bin/netstat/inet.c
+\begin{verbatim}
+        p(ips\_cantforward, "\t%lu packet%s not forwardable\n");
+\end{verbatim}
+grep -l 'ips\_cantforward' /usr/src/sys/*/*
+\begin{verbatim}
+        /usr/src/sys/net/pf.c
+        /usr/src/sys/netinet/ip_input.c
+        /usr/src/sys/netinet/ip_var.h
+\end{verbatim}
+view /usr/src/sys/netinet/ip\_input.c
+\begin{verbatim}
+        if (!ISSET(flags, IP_FORWARDING)) {
+                ipstat_inc(ips_cantforward);
+                goto bad;
+        }
+\end{verbatim}
+\end{frame}
+
 \subsection{Counters}
 \begin{frame}{Counters}
 Developers should
@@ -825,11 +893,21 @@ Developers should
 \tableofcontents[currentsection]
 \end{frame}
 
+\subsection{Open Topics}
+\begin{frame}{Open Topics}
+\begin{itemize}
+  \item	IPsec
+  \item routing
+  \item	bridge, veb
+  \item hardware offloading
+\end{itemize}
+\end{frame}
+
 \subsection{Links}
 \begin{frame}{Links}
 \begin{itemize}
-    \item these slides
-	{\small \url{https://github.com/bluhm/talk-packetflow}}
+  \item these slides
+    {\small \url{https://github.com/bluhm/talk-packetflow}}
 \end{itemize}
 \end{frame}
 
