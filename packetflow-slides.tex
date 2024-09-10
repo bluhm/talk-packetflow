@@ -68,8 +68,8 @@
 
 \section{Measurement}
 
-\subsection{Counter}
-\begin{frame}[fragile]{Counter}
+\subsection{Protocol Statistics Counter}
+\begin{frame}[fragile]{Protocol Statistics Counter}
 netstat -ss
 \scriptsize
 \begin{verbatim}
@@ -103,8 +103,8 @@ em0 tcp 192.168.0.31:443 (80.154.94.48:443) <- 193.30.66.53:51727
 \end{verbatim}
 \end{frame}
 
-\subsection{Socket}
-\begin{frame}[fragile]{Sockets}
+\subsection{Network Sockets}
+\begin{frame}[fragile]{Network Sockets}
 netstat -an
 \scriptsize
 \begin{verbatim}
@@ -122,8 +122,8 @@ udp          0      0  *.*             *.*
 \end{verbatim}
 \end{frame}
 
-\subsection{tcpdump}
-\begin{frame}[fragile]{tcpdump}
+\subsection{Tcpdump Traffic}
+\begin{frame}[fragile]{Tcpdump Traffic}
 tcpdump -ni enc0 -v
 \scriptsize
 \begin{verbatim}
@@ -242,8 +242,8 @@ tcpdump -ni enc0 -v
 \end{framed}
 \end{frame}
 
-\subsection{Socket Buffer}
-\begin{frame}[fragile]{Socket Buffer}
+\subsection{Socket Buffer Recv-Q Send-Q}
+\begin{frame}[fragile]{Socket Buffer Recv-Q Send-Q}
 \begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
@@ -281,8 +281,8 @@ tcp         0 131732  10.10.12.3.44648  10.10.12.4.12345  ESTABLISHED
 \end{verbatim}
 \end{frame}
 
-\subsection{Interface Queue}
-\begin{frame}[fragile]{Interface Queue}
+\subsection{Interface Queue qdrops}
+\begin{frame}[fragile]{Interface Queue qdrops}
 \begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
@@ -337,10 +337,100 @@ ix0:0:txq:0
 	 maxqlen: 255 packets
   \end{verbatim}
   \end{minipage}
+  \\
 \end{tabular}
 \end{frame}
 
-\subsection{Data}
+\subsection{Device Driver OACTIVE}
+\begin{frame}[fragile]{Device Driver OACTIVE}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (dd) [right] {device driver} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) ++(0,.2)
+    node (tx) [right] {transmit DMA ring} ++(-.5-1*.4,-.8)
+    node (ni) [right] {network interface};
+  \path (node cs:name=dd,anchor=west) +(.3+1*.4,-.3) coordinate (ddo) {};
+  \path (node cs:name=tx,anchor=west) +(-.2-3*.4,0) coordinate (txi) {};
+  \draw[->] (ddo) -- (txi);
+  \path (node cs:name=tx,anchor=west) +(-.2-1*.4,0) coordinate (txo) {};
+  \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nii) {};
+  \draw[->] (txo) -- (nii);
+\end{tikzpicture}
+\end{framed}
+ifconfig em1
+\scriptsize
+\begin{verbatim}
+em1: flags=8c43<UP,BROADCAST,RUNNING,OACTIVE,SIMPLEX,MULTICAST> mtu 1500
+        lladdr 0c:c4:7a:78:f3:55
+        description: Intel I210
+        index 6 priority 0 llprio 3
+        media: Ethernet autoselect (1000baseT full-duplex)
+        status: active
+        inet 10.10.12.3 netmask 0xffffff00 broadcast 10.10.12.255
+\end{verbatim}
+\end{frame}
+
+\subsection{Transmit Rings oactives}
+\begin{frame}[fragile]{Transmit Rings oactives}
+dmesg
+\scriptsize
+\begin{verbatim}
+ix1 at pci1 dev 0 function 1 "Intel X550T" rev 0x01, msix,
+  4 queues, address a0:36:9f:e0:52:55
+\end{verbatim}
+\normalsize
+kstat txq
+\\
+\vspace{.3cm}
+\scriptsize
+\begin{tabular}{ll}
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix1:0:txq:0
+            qlen: 90 packets
+         maxqlen: 255 packets
+         oactive: true
+        oactives: 1919595
+  \end{verbatim}
+  \end{minipage}
+  &
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix1:0:txq:1
+            qlen: 141 packets
+         maxqlen: 255 packets
+         oactive: true
+        oactives: 2251633
+  \end{verbatim}
+  \end{minipage}
+  \\
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix1:0:txq:2
+            qlen: 6 packets
+         maxqlen: 255 packets
+         oactive: true
+        oactives: 1788971
+  \end{verbatim}
+  \end{minipage}
+  &
+  \begin{minipage}{4.5cm}
+  \begin{verbatim}
+ix1:0:txq:3
+            qlen: 55 packets
+         maxqlen: 255 packets
+         oactive: true
+        oactives: 1925063
+  \end{verbatim}
+  \end{minipage}
+  \\
+\end{tabular}
+\end{frame}
+
+
 
 \section{Conclusion}
 
