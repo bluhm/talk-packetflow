@@ -822,6 +822,30 @@ block return out log proto udp all user = 55
 \tableofcontents[currentsection]
 \end{frame}
 
+\subsection{Create Devices}
+\begin{frame}[fragile]{Create Devices}
+ifconfig -C
+\scriptsize
+\begin{verbatim}
+aggr bpe bridge carp egre enc eoip etherip gif gre lo mgre mpe mpip
+mpw nvgre pair pflog pflow pfsync ppp pppoe rport sec svlan tap
+tpmr trunk tun veb vether vlan vport vxlan wg
+\end{verbatim}
+\normalsize
+ifconfig vlan0 create vnetid 42 parent em0 up
+\scriptsize
+\begin{verbatim}
+vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+        lladdr 0c:c4:7a:78:f3:54
+        index 22 priority 0 llprio 3
+        encap: vnetid 42 parent em0 txprio packet rxprio outer
+        groups: vlan
+        media: Ethernet autoselect (1000baseT full-duplex)
+        status: active
+\end{verbatim}
+
+\end{frame}
+
 \subsection{bpf Tcpdump}
 
 \section{Tips \& Tricks}
