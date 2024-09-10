@@ -822,8 +822,8 @@ block return out log proto udp all user = 55
 \tableofcontents[currentsection]
 \end{frame}
 
-\subsection{Create Devices}
-\begin{frame}[fragile]{Create Devices}
+\subsection{Create Device}
+\begin{frame}[fragile]{Create Device}
 ifconfig -C
 \scriptsize
 \begin{verbatim}
@@ -843,7 +843,76 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
         media: Ethernet autoselect (1000baseT full-duplex)
         status: active
 \end{verbatim}
+\end{frame}
 
+\subsection{Hardware Device Receive}
+\begin{frame}{Hardware Device Receive}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (ni) [right] {network interface} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) ++(0,-.2)
+    node (rx) [right] {receive DMA ring} ++(-.5-1*.4,.8)
+    node (em) [right] {em\_intr()} ++(0,.8)
+    node (fq) [right] {ifiq\_input()} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {interface input queue} ++(-.5,.8)
+    node (is) [right] {IP stack};
+  \path (node cs:name=ni,anchor=west) +(.3+1*.4,.3) coordinate (nio) {};
+  \path (node cs:name=rx,anchor=west) +(-.2-3*.4,0) coordinate (rxi) {};
+  \draw[->] (nio) -- (rxi);
+  \path (node cs:name=rx,anchor=west) +(-.2-1*.4,0) coordinate (rxo) {};
+  \path (node cs:name=em,anchor=west) +(.3,-.3) coordinate (emi) {};
+  \draw[->] (rxo) -- (emi);
+  \path (node cs:name=em,anchor=west) +(.3,.3) coordinate (emo) {};
+  \path (node cs:name=fq,anchor=west) +(.3,-.3) coordinate (fqi) {};
+  \draw[->] (emo) -- (fqi);
+  \path (node cs:name=fq,anchor=west) +(.3+1*.4,.3) coordinate (fqo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (fqo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=is,anchor=west) +(.3,-.3) coordinate (isi) {};
+  \draw[->] (iqo) -- (isi);
+\end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\subsection{Hardware Device Transmit}
+\begin{frame}{Hardware Device Transmit}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (is) [right] {IP stack} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {interface output queue} ++(-.5,-.8)
+    node (fq) [right] {ifq\_start()} ++(0,-.8)
+    node (es) [right] {em\_start()} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) ++(0,.2)
+    node (tx) [right] {transmit DMA ring} ++(-.5-1*.4,-.8)
+    node (ni) [right] {network interface};
+  \path (node cs:name=is,anchor=west) +(.3+1*.4,-.3) coordinate (iso) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (iso) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=fq,anchor=west) +(.3,.3) coordinate (fqi) {};
+  \draw[->] (oqo) -- (fqi);
+  \path (node cs:name=fq,anchor=west) +(.3,-.3) coordinate (fqo) {};
+  \path (node cs:name=es,anchor=west) +(.3,.3) coordinate (esi) {};
+  \draw[->] (fqo) -- (esi);
+  \path (node cs:name=es,anchor=west) +(.3+1*.4,-.3) coordinate (eso) {};
+  \path (node cs:name=tx,anchor=west) +(-.2-3*.4,0) coordinate (txi) {};
+  \draw[->] (eso) -- (txi);
+  \path (node cs:name=tx,anchor=west) +(-.2-1*.4,0) coordinate (txo) {};
+  \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nii) {};
+  \draw[->] (txo) -- (nii);
+\end{tikzpicture}
+\end{framed}
 \end{frame}
 
 \subsection{bpf Tcpdump}
