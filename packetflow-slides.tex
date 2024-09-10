@@ -654,7 +654,67 @@ ix1:0:txq:3
 \end{framed}
 \end{frame}
 
-\subsection{pf Rules and States}
+\subsection{pf Test}
+\begin{frame}{pf Test}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (idd) [right] {device driver} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {input queue} ++(-.5,.8)
+    node (ei) [right] {ether\_input()} ++(0.4,1)
+    node (pi) [right] {pf\_test(IN)} ++(-0.4,.9)
+    node (ii) [right] {ip\_input()} ++(0,1.2)
+    node (ti) [right] {tcp\_input()} ++(5,0)
+
+    node (to) [right] {tcp\_output()} ++(0,-1.2)
+    node (io) [right] {ip\_output()} ++(0.4,-.9)
+    node (po) [right] {pf\_test(OUT)} ++(-0.4,-1)
+    node (eo) [right] {ether\_output()} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {output} ++(-.5,-.8)
+    node (odd) [right] {device} ++(.1,-.6);
+  \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (iddo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (iei) {};
+  \draw[->] (iqo) -- (iei);
+  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
+  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
+  \draw[->] (eio) -- (iii);
+  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
+  \path (node cs:name=ti,anchor=west) +(.3,-.3) coordinate (tii) {};
+  \draw[->] (iio) -- (tii);
+  \path (node cs:name=ii,anchor=west) +(.7,-.3) coordinate (iip) {};
+  \path (node cs:name=pi,anchor=west) +(.3,.3) coordinate (pii) {};
+  \draw[<->] (iip) -- (pii);
+
+  \path (node cs:name=to,anchor=west) +(.3,-.3) coordinate (too) {};
+  \path (node cs:name=io,anchor=west) +(.3,.3) coordinate (ioi) {};
+  \draw[->] (too) -- (ioi);
+  \path (node cs:name=io,anchor=west) +(.3,-.3) coordinate (ioo) {};
+  \path (node cs:name=eo,anchor=west) +(.3,.3) coordinate (eoi) {};
+  \draw[->] (ioo) -- (eoi);
+  \path (node cs:name=eo,anchor=west) +(.3+1*.4,-.3) coordinate (eoo) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (eoo) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
+  \draw[->] (oqo) -- (oddi);
+  \path (node cs:name=io,anchor=west) +(.7,-.3) coordinate (iop) {};
+  \path (node cs:name=po,anchor=west) +(.3,.3) coordinate (poi) {};
+  \draw[<->] (iop) -- (poi);
+
+  \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
+  \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
+  \draw[->] (ifo) -- (ifi) node [midway,above] {ip\_forward()};
+
+\end{tikzpicture}
+\end{framed}
+\end{frame}
 
 \subsection{bpf Tcpdump}
 
