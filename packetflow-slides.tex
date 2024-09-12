@@ -925,17 +925,18 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \draw[<->] (node cs:name=vi,anchor=east) -- +(.4,0)
     node (vs) [right] {vlan\_strip()};
   \draw[<->] (node cs:name=fv,anchor=east) -- +(.4,0)
-    node (bm) [right] {bpf\_mtap\_ether(IN)};
+    node (bv) [right] {bpf\_mtap\_ether(IN)};
 \end{tikzpicture}
 \end{framed}
 \end{frame}
 
-\subsection{Hardware Device Transmit}
-\begin{frame}{Hardware Device Transmit}
+\subsection{Hardware Transmit and Tcpdump}
+\begin{frame}{Hardware Transmit and Tcpdump}
 \begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
-    node (is) [right] {IP stack} ++(.1,-.6)
+    node (io) [right] {ip\_output()} ++(0,-.8)
+    node (eo) [right] {ether\_output()}  ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
     node (oq) [right] {interface output queue} ++(-.5,-.8)
@@ -946,9 +947,12 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
     rectangle ++(.4,-.4) ++(0,.2)
     node (tx) [right] {transmit DMA ring} ++(-.5-1*.4,-.8)
     node (ni) [right] {network interface};
-  \path (node cs:name=is,anchor=west) +(.3+1*.4,-.3) coordinate (iso) {};
+  \path (node cs:name=io,anchor=west) +(.3,-.3) coordinate (ioo) {};
+  \path (node cs:name=eo,anchor=west) +(.3,.3) coordinate (eoi) {};
+  \draw[->] (ioo) -- (eoi);
+  \path (node cs:name=eo,anchor=west) +(.3+1*.4,-.3) coordinate (eoo) {};
   \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
-  \draw[->] (iso) -- (oqi);
+  \draw[->] (eoo) -- (oqi);
   \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
   \path (node cs:name=fq,anchor=west) +(.3,.3) coordinate (fqi) {};
   \draw[->] (oqo) -- (fqi);
@@ -961,11 +965,56 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \path (node cs:name=tx,anchor=west) +(-.2-1*.4,0) coordinate (txo) {};
   \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nii) {};
   \draw[->] (txo) -- (nii);
+
+  \draw[<->] (node cs:name=es,anchor=east) -- +(.4,0)
+    node (bm) [right] {bpf\_mtap\_ether(OUT)};
 \end{tikzpicture}
 \end{framed}
 \end{frame}
 
-\subsection{bpf Tcpdump}
+\subsection{VLan Transmit and Tcpdump}
+\begin{frame}{VLan Transmit and Tcpdump}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (eo) [right] {ether\_output()} ++(0,-.8)
+    node (ve) [right] {vlan\_enqueue()} ++(0,-.8)
+    node (vt) [right] {vlan\_transmit()} ++(.1,-.6-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {interface output queue} ++(-.5,-.8)
+    node (fq) [right] {ifq\_start()} ++(0,-.8)
+    node (es) [right] {em\_start()} ++(.1,-.6);
+  \path (node cs:name=eo,anchor=west) +(.3,-.3) coordinate (eoo) {};
+  \path (node cs:name=ve,anchor=west) +(.3,.3) coordinate (vei) {};
+  \draw[->] (eoo) -- (vei);
+  \path (node cs:name=ve,anchor=west) +(.3,-.3) coordinate (veo) {};
+  \path (node cs:name=vt,anchor=west) +(.3,.3) coordinate (vti) {};
+  \draw[->] (veo) -- (vti);
+  \path (node cs:name=vt,anchor=west) +(.3+1*.4,-.3) coordinate (vto) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (vto) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=fq,anchor=west) +(.3,.3) coordinate (fqi) {};
+  \draw[->] (oqo) -- (fqi);
+  \path (node cs:name=fq,anchor=west) +(.3,-.3) coordinate (fqo) {};
+  \path (node cs:name=es,anchor=west) +(.3,.3) coordinate (esi) {};
+  \draw[->] (fqo) -- (esi);
+
+  \draw[<->] (node cs:name=vt,anchor=east) -- +(.4,0)
+    node (bv) [right] {bpf\_mtap\_ether(OUT)};
+  \draw[<->] (node cs:name=vt,anchor=south east) -- +(.4,-.3)
+    node (vi) [right] {vlan\_inject()};
+  \draw[<->] (node cs:name=es,anchor=east) -- +(.4,0)
+    node (bm) [right] {bpf\_mtap\_ether(OUT)};
+\end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\section{TODO}
+\begin{frame}{Agenda}
+\tableofcontents[currentsection]
+\end{frame}
 
 \section{Tips \& Tricks}
 \begin{frame}{Agenda}
