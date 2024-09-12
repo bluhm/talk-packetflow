@@ -845,8 +845,8 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 \end{verbatim}
 \end{frame}
 
-\subsection{Hardware Device Receive}
-\begin{frame}{Hardware Device Receive}
+\subsection{Hardware Receive and Tcpdump}
+\begin{frame}{Hardware Receive and Tcpdump}
 \begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
@@ -860,7 +860,8 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (iq) [right] {interface input queue} ++(-.5,.8)
-    node (is) [right] {IP stack};
+    node (ei) [right] {ether\_input()} ++(0,.8)
+    node (ii) [right] {ip\_input()};
   \path (node cs:name=ni,anchor=west) +(.3+1*.4,.3) coordinate (nio) {};
   \path (node cs:name=rx,anchor=west) +(-.2-3*.4,0) coordinate (rxi) {};
   \draw[->] (nio) -- (rxi);
@@ -874,8 +875,57 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
   \draw[->] (fqo) -- (iqi);
   \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
-  \path (node cs:name=is,anchor=west) +(.3,-.3) coordinate (isi) {};
-  \draw[->] (iqo) -- (isi);
+  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (eii) {};
+  \draw[->] (iqo) -- (eii);
+  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
+  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
+  \draw[->] (eio) -- (iii);
+
+  \draw[<->] (node cs:name=fq,anchor=east) -- +(.4,0)
+    node (bm) [right] {bpf\_mtap\_ether(IN)};
+\end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\subsection{VLan Receive and Tcpdump}
+\begin{frame}{VLan Receive and Tcpdump}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (em) [right] {em\_intr()} ++(0,.8)
+    node (fq) [right] {ifiq\_input()} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {interface input queue} ++(-.5,.8)
+    node (ev) [right] {ether\_input()} ++(0,.8)
+    node (vi) [right] {vlan\_input()} ++(0,.8)
+    node (fv) [right] {ifv\_input()} ++(0,.8)
+    node (ei) [right] {ether\_input()};
+  \path (node cs:name=em,anchor=west) +(.3,.3) coordinate (emo) {};
+  \path (node cs:name=fq,anchor=west) +(.3,-.3) coordinate (fqi) {};
+  \draw[->] (emo) -- (fqi);
+  \path (node cs:name=fq,anchor=west) +(.3+1*.4,.3) coordinate (fqo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (fqo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=ev,anchor=west) +(.3,-.3) coordinate (evi) {};
+  \draw[->] (iqo) -- (evi);
+  \path (node cs:name=ev,anchor=west) +(.3,.3) coordinate (evo) {};
+  \path (node cs:name=vi,anchor=west) +(.3,-.3) coordinate (vii) {};
+  \draw[->] (evo) -- (vii);
+  \path (node cs:name=vi,anchor=west) +(.3,.3) coordinate (vio) {};
+  \path (node cs:name=fv,anchor=west) +(.3,-.3) coordinate (fvi) {};
+  \draw[->] (vio) -- (fvi);
+  \path (node cs:name=fv,anchor=west) +(.3,.3) coordinate (fvo) {};
+  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (eii) {};
+  \draw[->] (fvo) -- (eii);
+
+  \draw[<->] (node cs:name=fq,anchor=east) -- +(.4,0)
+    node (bm) [right] {bpf\_mtap\_ether(IN)};
+  \draw[<->] (node cs:name=vi,anchor=east) -- +(.4,0)
+    node (vs) [right] {vlan\_strip()};
+  \draw[<->] (node cs:name=fv,anchor=east) -- +(.4,0)
+    node (bm) [right] {bpf\_mtap\_ether(IN)};
 \end{tikzpicture}
 \end{framed}
 \end{frame}
