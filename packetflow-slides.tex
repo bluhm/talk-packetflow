@@ -109,7 +109,7 @@ tcp:
 
 \subsection{pf States}
 \begin{frame}[fragile]{pf State}
-pfctl -ss
+pfctl -s states
 \scriptsize
 \begin{verbatim}
 em0 tcp 80.154.94.48:22 <- 84.191.39.187:60436
@@ -457,7 +457,7 @@ ix1:0:txq:3
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (rb) [right] {receive} ++(-.5,.8)
-    node (iso) [right] {socket} ++(3,0)
+    node (iso) [right] {socket} ++(3.2,0)
 
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
@@ -525,7 +525,7 @@ ix1:0:txq:3
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (rb) [right] {receive} ++(-.5,.8)
-    node (iso) [right] {socket} ++(3,0)
+    node (iso) [right] {socket} ++(3.2,0)
 
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
@@ -597,7 +597,7 @@ ix1:0:txq:3
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (rb) [right] {receive buffer} ++(-.5,.8)
-    node (iso) [right] {socket} ++(4,0)
+    node (iso) [right] {socket} ++(4.4,0)
 
     node (oso) [right] {socket} ++(0,-1.6)
     node (uo) [right] {udp\_output()} ++(0,-1.2)
@@ -663,7 +663,7 @@ ix1:0:txq:3
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
     node (rb) [right] {receive} ++(-.5,.8)
-    node (iso) [right] {socket} ++(3.1,0)
+    node (iso) [right] {socket} ++(3.2,0)
 
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
@@ -758,7 +758,7 @@ ip6:
     node (ei) [right] {ether\_input()} ++(0.4,1)
     node (pi) [right] {pf\_test(IN)} ++(-0.4,.9)
     node (ii) [right] {ip\_input()} ++(0,1.2)
-    node (ti) [right] {tcp\_input()} ++(5,0)
+    node (ti) [right] {tcp\_input()} ++(5.6,0)
 
     node (to) [right] {tcp\_output()} ++(0,-1.2)
     node (io) [right] {ip\_output()} ++(0.4,-.9)
@@ -818,7 +818,7 @@ ip6:
     node (ei) [right] {ether\_input()} ++(0.4,1)
     node (pi) [right] {pf\_test(IN)} ++(-0.4,.9)
     node (ii) [right] {ip6\_input()} ++(0,1.2)
-    node (ti) [right] {tcp\_input()} ++(5.3,0)
+    node (ti) [right] {tcp\_input()} ++(5.6,0)
 
     node (to) [right] {tcp\_output()} ++(0,-1.2)
     node (io) [right] {ip6\_output()} ++(0.4,-.9)
@@ -871,7 +871,7 @@ ip6:
 
 \subsection{pf Rules}
 \begin{frame}[fragile]{pf Rules}
-pfctl -sr
+pfctl -s rules
 \scriptsize
 \begin{verbatim}
 block return all
