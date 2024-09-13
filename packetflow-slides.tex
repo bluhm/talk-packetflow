@@ -864,7 +864,7 @@ ip6:
   \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
   \path (node cs:name=eo,anchor=west) +(-.1,0) coordinate (ifi) {};
   \draw[->] (ifo) -- (ifi) node (if) [midway,above,sloped] {ip6\_forward()};
-  \draw[<->] (node cs:name=if,anchor=south) -- +(0,-1)
+  \draw[<->] (node cs:name=if,anchor=south) -- +(0,-.6)
     node (pf) [below,align=center] {pf\_test\\ (FWD)};
 \end{tikzpicture}
 \end{frame}
