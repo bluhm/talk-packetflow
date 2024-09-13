@@ -65,6 +65,24 @@
 \end{tikzpicture}
 \end{frame}
 
+\subsection{Layer}
+\begin{frame}{Layer}
+\begin{tikzpicture}
+  \draw (-1,0) rectangle +(6,1) node(l1) [midway] {Physical};
+  \draw (-1,1) rectangle +(6,1) node(l1) [midway] {Driver};
+  \draw (-1,2) rectangle +(6,1) node(l2) [midway] {Ethernet};
+  \draw (-1,3) rectangle +(6,1) node(l3) [midway] {Network IP};
+  \draw (-1,4) rectangle +(6,1) node(l4) [midway] {TCP/UDP/Raw};
+  \draw (-1,5) rectangle +(6,1) node(l5) [midway] {Socket};
+  \draw (-1,6) rectangle +(6,1) node(l5) [midway] {Application};
+  \draw[thick] (-4,5.5) node(context) {} -- +(5,0) +(7,0) -- +(10.5,0);
+  \node [below right] at (context) {Kernel};
+  \node [above right] at (context) {User Land};
+  \draw[thick] (-4,1) node(hardware) {} -- +(10.5,0);
+  \node [below right] at (hardware) {Hardware};
+\end{tikzpicture}
+\end{frame}
+
 \section{Measurement}
 \begin{frame}{Agenda}
 \tableofcontents[currentsection]
@@ -145,24 +163,6 @@ tcpdump -ni enc0 -v
 \section{Packet Queues}
 \begin{frame}{Agenda}
 \tableofcontents[currentsection]
-\end{frame}
-
-\subsection{Layer}
-\begin{frame}{Layer}
-\begin{tikzpicture}
-  \draw (-1,0) rectangle +(6,1) node(l1) [midway] {Physical};
-  \draw (-1,1) rectangle +(6,1) node(l1) [midway] {Driver};
-  \draw (-1,2) rectangle +(6,1) node(l2) [midway] {Ethernet};
-  \draw (-1,3) rectangle +(6,1) node(l3) [midway] {Network IP};
-  \draw (-1,4) rectangle +(6,1) node(l4) [midway] {TCP/UDP/Raw};
-  \draw (-1,5) rectangle +(6,1) node(l5) [midway] {Socket};
-  \draw (-1,6) rectangle +(6,1) node(l5) [midway] {Application};
-  \draw[thick] (-4,5.5) node(context) {} -- +(5,0) +(7,0) -- +(10.5,0);
-  \node [below right] at (context) {Kernel};
-  \node [above right] at (context) {User Land};
-  \draw[thick] (-4,1) node(hardware) {} -- +(10.5,0);
-  \node [below right] at (hardware) {Hardware};
-\end{tikzpicture}
 \end{frame}
 
 \subsection{Input Queues}
@@ -441,6 +441,74 @@ ix1:0:txq:3
 \section{IP Stack}
 \begin{frame}{Agenda}
 \tableofcontents[currentsection]
+\end{frame}
+
+\subsection{Protocol Stack}
+\begin{frame}{Protocol Stack}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (idd) [right] {device driver} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {input queue} ++(-.5,.8)
+    node (ei) [right] {ether\_input()} ++(0,.8)
+    node (ii) [right] {ip\_input()} ++(0,.8)
+    node (ti) [right] {tcp\_input()} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (rb) [right] {receive} ++(-.5,.8)
+    node (iso) [right] {socket} ++(3,0)
+
+    node (oso) [right] {socket} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (sb) [right] {send buffer} ++(-.5,-.8)
+    node (to) [right] {tcp\_output()} ++(0,-.8)
+    node (io) [right] {ip\_output()} ++(0,-.8)
+    node (eo) [right] {ether\_output()} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {output} ++(-.5,-.8)
+    node (odd) [right] {device}
+    ;
+  \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->] (iddo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (iei) {};
+  \draw[->] (iqo) -- (iei);
+  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
+  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
+  \draw[->] (eio) -- (iii);
+  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
+  \path (node cs:name=ti,anchor=west) +(.3,-.3) coordinate (tii) {};
+  \draw[->] (iio) -- (tii);
+  \path (node cs:name=ti,anchor=west) +(.3+1*.4,.3) coordinate (iti) {};
+  \path (node cs:name=rb,anchor=west) +(-.2-2*.4,0) coordinate (rbi) {};
+  \draw[->] (iti) -- (rbi);
+  \path (node cs:name=rb,anchor=west) +(-.2,0) coordinate (rbo) {};
+  \path (node cs:name=iso,anchor=west) +(.3,-.3) coordinate (isoi) {};
+  \draw[->] (rbo) -- (isoi);
+
+  \path (node cs:name=oso,anchor=west) +(.3+1*.4,-.3) coordinate (osoo) {};
+  \path (node cs:name=sb,anchor=west) +(-.2-2*.4,0) coordinate (sbi) {};
+  \draw[->] (osoo) -- (sbi);
+  \path (node cs:name=sb,anchor=west) +(-.2,0) coordinate (sbo) {};
+  \path (node cs:name=to,anchor=west) +(.3,.3) coordinate (toi) {};
+  \draw[->] (sbo) -- (toi);
+  \path (node cs:name=to,anchor=west) +(.3,-.3) coordinate (too) {};
+  \path (node cs:name=io,anchor=west) +(.3,.3) coordinate (ioi) {};
+  \draw[->] (too) -- (ioi);
+  \path (node cs:name=io,anchor=west) +(.3,-.3) coordinate (ioo) {};
+  \path (node cs:name=eo,anchor=west) +(.3,.3) coordinate (eoi) {};
+  \draw[->] (ioo) -- (eoi);
+  \path (node cs:name=eo,anchor=west) +(.3+1*.4,-.3) coordinate (eoo) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->] (eoo) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
+  \draw[->] (oqo) -- (oddi);
+\end{tikzpicture}
 \end{frame}
 
 \subsection{IP Forwarding}
