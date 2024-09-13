@@ -1009,6 +1009,31 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 \tableofcontents[currentsection]
 \end{frame}
 
+\subsection{IPsec Flow and SA}
+\begin{frame}[fragile]{IPsec Flow and SA}
+ipsecctl -s flow
+\scriptsize
+\begin{verbatim}
+flow esp in
+    from 10.188.108.0/24 to 10.188.115.0/24
+    local fdd7:e83e:66bc:100::70 peer fdd7:e83e:66bc:100::17
+flow esp out
+    from 10.188.115.0/24 to 10.188.108.0/24
+    local fdd7:e83e:66bc:100::70 peer fdd7:e83e:66bc:100::17
+\end{verbatim}
+\normalsize
+ipsecctl -s sa
+\scriptsize
+\begin{verbatim}
+esp tunnel
+    from fdd7:e83e:66bc:100::17 to fdd7:e83e:66bc:100::70
+    spi 0x10000861
+esp tunnel
+    from fdd7:e83e:66bc:100::70 to fdd7:e83e:66bc:100::17
+    spi 0x10000862
+\end{verbatim}
+\end{frame}
+
 \subsection{IPsec Input}
 \begin{frame}{IPsec Input}
 \begin{tikzpicture}
@@ -1186,7 +1211,6 @@ Developers should
 \subsection{Open Topics}
 \begin{frame}{Open Topics}
 \begin{itemize}
-  \item IPsec
   \item routing
   \item arp, neighbor discovery
   \item bridge, veb
