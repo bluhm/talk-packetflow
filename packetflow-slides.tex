@@ -1036,11 +1036,11 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 \begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
-    node (ii) [right] {ip\_input()} ++(0,.8)
-    node (id) [right] {ip\_deliver()} ++(0,.8)
+    node (ii) [right] {ip\_input()} ++(.4,.8)
+    node (id) [right] {ip\_deliver()} ++(.4,.8)
     node (ci) [right] {ipsec\_common\_input()} ++(.4,.8)
     node (gt) [right] {gettdb(spi)} ++(-.4,.7)
-    node (ei) [right] {esp\_input()} ++(.4,.8)
+    node (es) [right] {esp\_input()} ++(.4,.8)
     node (cr) [right] {crypto\_invoke()} ++(-.4,.7)
     node (cc) [right] {ipsec\_common\_input\_cb()} ++(.4,.8)
     node (be) [right] {bpf\_mtap\_hdr(enc0,IN)}
@@ -1049,35 +1049,32 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
     node (if) [right] {ip\_forward()} ++(0,.8)
     node (ti) [right] {tcp\_input()}
     ;
-  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
+  \path (node cs:name=ii,anchor=west) +(.7,.3) coordinate (iio) {};
   \path (node cs:name=id,anchor=west) +(.3,-.3) coordinate (idi) {};
   \draw[->] (iio) -- (idi);
-  \path (node cs:name=id,anchor=west) +(.3,.3) coordinate (ido) {};
-  \path (node cs:name=ci,anchor=west) +(.3,-.3) coordinate (cii) {};
-  \draw[->] (ido) -- (cii);
-  \path (node cs:name=id,anchor=west) +(.3,.3) coordinate (ido) {};
+  \path (node cs:name=id,anchor=west) +(.7,.3) coordinate (ido) {};
   \path (node cs:name=ci,anchor=west) +(.3,-.3) coordinate (cii) {};
   \draw[->] (ido) -- (cii);
   \path (node cs:name=ci,anchor=west) +(.3,.3) coordinate (cio) {};
-  \path (node cs:name=ei,anchor=west) +(.3,-.3) coordinate (eii) {};
-  \draw[->] (cio) -- (eii);
-  \path (node cs:name=ei,anchor=west) +(.3,.3) coordinate (eio) {};
+  \path (node cs:name=es,anchor=west) +(.3,-.3) coordinate (esi) {};
+  \draw[->] (cio) -- (esi);
+  \path (node cs:name=es,anchor=west) +(.3,.3) coordinate (eso) {};
   \path (node cs:name=cc,anchor=west) +(.3,-.3) coordinate (cci) {};
-  \draw[->] (eio) -- (cci);
+  \draw[->] (eso) -- (cci);
 
-  \path (node cs:name=cc,anchor=west) +(0,-.3) coordinate (ccbo) {};
-  \path (node cs:name=id,anchor=west) +(0,.3) coordinate (idbi) {};
-  \draw[->] (ccbo) -- (idbi);
-  \path (node cs:name=id,anchor=west) +(0,-.3) coordinate (idbo) {};
-  \path (node cs:name=ii,anchor=west) +(0,.3) coordinate (iibi) {};
-  \draw[->] (idbo) -- (iibi);
+  \path (node cs:name=cc,anchor=west) +(.1,0) coordinate (ccbo) {};
+  \path (node cs:name=id,anchor=west) +(.3,.3) coordinate (idbi) {};
+  \draw[->] (ccbo) -| (idbi);
+  \path (node cs:name=id,anchor=west) +(.1,0) coordinate (idbo) {};
+  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iibi) {};
+  \draw[->] (idbo) -| (iibi);
 
   \path (node cs:name=ci,anchor=west) +(.7,.3) coordinate (cia) {};
   \path (node cs:name=gt,anchor=west) +(.3,-.3) coordinate (gti) {};
   \draw[<->] (cia) -- (gti);
-  \path (node cs:name=ei,anchor=west) +(.7,.3) coordinate (eia) {};
+  \path (node cs:name=es,anchor=west) +(.7,.3) coordinate (esa) {};
   \path (node cs:name=cr,anchor=west) +(.3,-.3) coordinate (cri) {};
-  \draw[<->] (eia) -- (cri);
+  \draw[<->] (esa) -- (cri);
   \path (node cs:name=cc,anchor=west) +(.7,.3) coordinate (cca) {};
   \path (node cs:name=be,anchor=west) +(.3,-.3) coordinate (bei) {};
   \draw[<->] (cca) -- (bei);
@@ -1088,6 +1085,57 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \path (node cs:name=id,anchor=east) +(.1,0) coordinate (idto) {};
   \path (node cs:name=ti,anchor=west) +(-.1,0) coordinate (tii) {};
   \draw[->] (idto) -- (tii);
+\end{tikzpicture}
+\end{framed}
+\end{frame}
+
+\subsection{IPsec Output}
+\begin{frame}{IPsec Output}
+\begin{framed}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (io) [right] {ip\_output()} ++(.4,-.8)
+    node (il) [right] {ip\_output\_ipsec\_lookup()} ++(.4,-.8)
+    node (gt) [right] {gettdbbydst(src,dst)} ++(-.4,-.7)
+    node (is) [right] {ip\_output\_ipsec\_send()} ++(0,-.8)
+    node (es) [right] {esp\_output()} ++(.8,-.8)
+    node (be) [right] {bpf\_mtap\_hdr(enc0,OUT)} ++(-.4,-.8)
+    node (cr) [right] {crypto\_invoke()} ++(-.4,-.7)
+    node (pd) [right] {ipsp\_process\_done()}
+    ;
+  \draw (5,0)
+    node (eo) [right] {ether\_output()}
+    ;
+  \path (node cs:name=io,anchor=west) +(.7,-.3) coordinate (ioo) {};
+  \path (node cs:name=il,anchor=west) +(.3,.3) coordinate (ili) {};
+  \draw[->] (ioo) -- (ili);
+  \path (node cs:name=il,anchor=west) +(.3,-.3) coordinate (ilo) {};
+  \path (node cs:name=is,anchor=west) +(.3,.3) coordinate (isi) {};
+  \draw[->] (ilo) -- (isi);
+  \path (node cs:name=is,anchor=west) +(.3,-.3) coordinate (iso) {};
+  \path (node cs:name=es,anchor=west) +(.3,.3) coordinate (esi) {};
+  \draw[->] (iso) -- (esi);
+  \path (node cs:name=es,anchor=west) +(.3,-.3) coordinate (eso) {};
+  \path (node cs:name=pd,anchor=west) +(.3,.3) coordinate (pdi) {};
+  \draw[->] (eso) -- (pdi);
+
+  \path (node cs:name=pd,anchor=west) +(.1,0) coordinate (pdbo) {};
+  \path (node cs:name=io,anchor=west) +(.3,-.3) coordinate (iobi) {};
+  \draw[->] (pdbo) -| (iobi);
+
+  \path (node cs:name=il,anchor=west) +(.7,-.3) coordinate (ilg) {};
+  \path (node cs:name=gt,anchor=west) +(.3,.3) coordinate (gti) {};
+  \draw[<->] (ilg) -- (gti);
+  \path (node cs:name=es,anchor=west) +(1.1,-.3) coordinate (esb) {};
+  \path (node cs:name=be,anchor=west) +(.3,.3) coordinate (bei) {};
+  \draw[<->] (esb) -- (bei);
+  \path (node cs:name=es,anchor=west) +(.7,-.3) coordinate (esc) {};
+  \path (node cs:name=cr,anchor=west) +(.3,.3) coordinate (cri) {};
+  \draw[<->] (esc) -- (cri);
+
+  \path (node cs:name=io,anchor=east) +(.1,0) coordinate (ioeo) {};
+  \path (node cs:name=eo,anchor=west) +(-.1,0) coordinate (eoi) {};
+  \draw[->] (ioeo) -- (eoi);
 \end{tikzpicture}
 \end{framed}
 \end{frame}
