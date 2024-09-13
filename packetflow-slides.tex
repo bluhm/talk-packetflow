@@ -167,7 +167,6 @@ tcpdump -ni enc0 -v
 
 \subsection{Input Queues}
 \begin{frame}{Input Queues}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (ni) [right] {network interface} ++(.1,.6)
@@ -204,12 +203,10 @@ tcpdump -ni enc0 -v
   \path (node cs:name=so,anchor=west) +(.3,-.3) coordinate (soi) {};
   \draw[->] (rbo) -- (soi);
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{Output Queues}
 \begin{frame}{Output Queues}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (so) [right] {socket} ++(.1,-.6)
@@ -246,7 +243,6 @@ tcpdump -ni enc0 -v
   \path (node cs:name=ni,anchor=west) +(.3,.3) coordinate (nii) {};
   \draw[->] (txo) -- (nii);
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{Socket Buffer Recv-Q Send-Q}
@@ -449,7 +445,6 @@ ix1:0:txq:3
 
 \subsection{IP Forwarding}
 \begin{frame}{IP Forwarding}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -518,12 +513,10 @@ ix1:0:txq:3
   \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
   \draw[->] (ifo) -- (ifi) node [midway,above] {ip\_forward()};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{UDP}
 \begin{frame}{UDP}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -586,12 +579,10 @@ ix1:0:txq:3
   \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
   \draw[->] (ifo) -- (ifi) node [midway,above] {ip\_forward()};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{IPv6}
 \begin{frame}{IPv6}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -660,7 +651,6 @@ ix1:0:txq:3
   \path (node cs:name=eo,anchor=west) +(-.1,0) coordinate (ifi) {};
   \draw[->] (ifo) -- (ifi) node [midway,above,sloped] {ip6\_forward()};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{Netstat Counter}
@@ -691,7 +681,6 @@ ip6:
 
 \subsection{pf Test}
 \begin{frame}{pf Test}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -748,12 +737,10 @@ ip6:
   \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
   \draw[->] (ifo) -- (ifi) node [midway,above] {ip\_forward()};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{pf IPv6}
 \begin{frame}{pf IPv6}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -812,7 +799,6 @@ ip6:
   \draw[<->] (node cs:name=if,anchor=south) -- +(0,-1)
     node (pf) [below,align=center] {pf\_test\\ (FWD)};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{pf Rules}
@@ -858,7 +844,6 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 
 \subsection{Hardware Receive and Tcpdump}
 \begin{frame}{Hardware Receive and Tcpdump}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (ni) [right] {network interface} ++(.1,.6)
@@ -896,12 +881,10 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \draw[<->] (node cs:name=fq,anchor=east) -- +(.4,0)
     node (bm) [right] {bpf\_mtap\_ether(IN)};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{VLan Receive and Tcpdump}
 \begin{frame}{VLan Receive and Tcpdump}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (em) [right] {em\_intr()} ++(0,.8)
@@ -940,12 +923,10 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \draw[<->] (node cs:name=fv,anchor=east) -- +(.4,0)
     node (bv) [right] {bpf\_mtap\_ether(IN)};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{Hardware Transmit and Tcpdump}
 \begin{frame}{Hardware Transmit and Tcpdump}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (io) [right] {ip\_output()} ++(0,-.8)
@@ -983,12 +964,10 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \draw[<->] (node cs:name=es,anchor=east) -- +(.4,0)
     node (bm) [right] {bpf\_mtap\_ether(OUT)};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{VLan Transmit and Tcpdump}
 \begin{frame}{VLan Transmit and Tcpdump}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (eo) [right] {ether\_output()} ++(0,-.8)
@@ -1023,7 +1002,6 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \draw[<->] (node cs:name=es,anchor=east) -- +(.4,0)
     node (bm) [right] {bpf\_mtap\_ether(OUT)};
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \section{IPsec}
@@ -1033,7 +1011,6 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 
 \subsection{IPsec Input}
 \begin{frame}{IPsec Input}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (ii) [right] {ip\_input()} ++(.4,.8)
@@ -1086,12 +1063,10 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \path (node cs:name=ti,anchor=west) +(-.1,0) coordinate (tii) {};
   \draw[->] (idto) -- (tii);
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \subsection{IPsec Output}
 \begin{frame}{IPsec Output}
-\begin{framed}
 \begin{tikzpicture}
   \draw (0,0)
     node (io) [right] {ip\_output()} ++(.4,-.8)
@@ -1137,7 +1112,6 @@ vlan0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> mtu 1500
   \path (node cs:name=eo,anchor=west) +(-.1,0) coordinate (eoi) {};
   \draw[->] (ioeo) -- (eoi);
 \end{tikzpicture}
-\end{framed}
 \end{frame}
 
 \section{Tips \& Tricks}
